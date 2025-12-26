@@ -2,15 +2,13 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Student\Pages\Login as StudentLogin;
-use App\Filament\Student\Widgets\StudentOutcomeStatus;
+use App\Filament\Student\Pages\StudentLogin;
 use App\Http\Middleware\ForceChangePassword;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Pages\Dashboard;
 use Filament\Support\Colors\Color;
 use Filament\Widgets\AccountWidget;
-use Filament\Widgets\FilamentInfoWidget;
 use Filament\Http\Middleware\Authenticate;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;

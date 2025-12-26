@@ -4,11 +4,10 @@ namespace App\Filament\Student\Pages;
 
 use Filament\Auth\Pages\Login as PagesLogin;
 use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Component;
 use Filament\Schemas\Schema;
 use Illuminate\Validation\ValidationException;
 
-class Login extends PagesLogin
+class StudentLogin extends PagesLogin
 {
     /**
      * Override form login

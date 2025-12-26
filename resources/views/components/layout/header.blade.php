@@ -67,13 +67,10 @@
 
                 <!-- Login Siswa -->
                 <a href="{{ route('filament.student.auth.login') }}"
-                    class="px-3 py-2 text-sm font-medium flex items-center rounded-md transition
-                        {{ request()->routeIs('student')
-                            ? 'bg-blue-800 text-white cursor-default'
-                            : 'text-blue-200 hover:text-white hover:bg-blue-800' }}">
+                    class="px-3 py-2 text-sm font-medium flex items-center rounded-md transition text-blue-200 hover:text-white hover:bg-blue-800">
                     <i class="fa-solid fa-right-to-bracket mr-1"></i>Login
                 </a>
-                
+
             </div>
 
             <!-- Mobile Menu Button -->
@@ -120,8 +117,7 @@
 
             <!-- login Siswa -->
             <a href="{{ route('filament.student.auth.login') }}"
-                class="flex items-center py-2 px-3 text-sm rounded-md font-medium
-                {{ request()->routeIs('student') ? 'bg-blue-800 text-white' : 'text-blue-200 hover:bg-blue-800 hover:text-white' }}">
+                class="flex items-center py-2 px-3 text-sm rounded-md font-medium text-blue-200 hover:bg-blue-800 hover:text-white">
                 <i class="fa-solid fa-right-to-bracket mr-2 text-blue-300"></i>Login
             </a>
         </div>

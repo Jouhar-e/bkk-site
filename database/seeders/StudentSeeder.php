@@ -19,7 +19,7 @@ class StudentSeeder extends Seeder
         }
 
         $graduationYear = 2025;
-        $defaultPassword = $major->code . $graduationYear; // RPL2025
+        $defaultPassword = "siswa123"; // RPL2025
 
         Student::updateOrCreate(
             ['nisn' => '1234567890'],
