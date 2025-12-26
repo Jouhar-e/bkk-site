@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\Models\ArticleCategory;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Cache;
 
 class ArticleController extends Controller
 {
@@ -28,45 +29,67 @@ class ArticleController extends Controller
 
     public function show(string $slug)
     {
-        $article = Article::with(['category', 'admin'])
+        $article = Article::with([
+            'category:id,name',
+            'admin:id,name'
+        ])
             ->where('slug', $slug)
             ->where('status', 'published')
             ->firstOrFail();
 
-        // =========================
-        // HITUNG VIEW ARTIKEL
-        // =========================
         $ip = request()->ip();
-        $today = Carbon::today();
+        $today = now()->toDateString();
+        $viewCacheKey = "article:viewed:{$article->id}:{$ip}:{$today}";
 
-        $alreadyViewed = ArticleView::where('article_id', $article->id)
-            ->where('viewer_ip', $ip)
-            ->whereDate('viewed_at', $today)
-            ->exists();
-
-        if (! $alreadyViewed) {
+        if (!Cache::has($viewCacheKey)) {
             ArticleView::create([
                 'article_id' => $article->id,
                 'viewer_ip' => $ip,
                 'viewed_at' => now(),
             ]);
+
+            Cache::put($viewCacheKey, true, 86400);
+            Cache::forget("article:views:total:{$article->id}");
+            Cache::forget("article:views:daily:{$article->id}:{$today}");
         }
 
-        // Artikel terkait
-        $relatedArticles = Article::with('category')
-            ->where('status', 'published')
-            ->where('category_id', $article->category_id)
-            ->where('id', '!=', $article->id)
-            ->latest('published_at')
-            ->take(4)
-            ->get();
+        $totalViews = Cache::remember(
+            "article:views:total:{$article->id}",
+            300,
+            fn() => ArticleView::where('article_id', $article->id)->count()
+        );
 
-        return view('articles.show', [
-            'profile' => BkkProfile::first(),
-            'article' => $article,
-            'relatedArticles' => $relatedArticles,
-            'categories' => ArticleCategory::orderBy('name')->get(),
-        ]);
+        $dailyViews = Cache::remember(
+            "article:views:daily:{$article->id}:{$today}",
+            300,
+            fn() => ArticleView::where('article_id', $article->id)
+                ->whereDate('viewed_at', $today)
+                ->count()
+        );
+
+        $relatedArticles = Cache::remember(
+            "article:related:{$article->category_id}",
+            1800,
+            fn() => Article::with('category:id,name')
+                ->where('status', 'published')
+                ->where('category_id', $article->category_id)
+                ->where('id', '!=', $article->id)
+                ->latest('published_at')
+                ->take(4)
+                ->get()
+        );
+
+        $profile = Cache::remember('bkk_profile_public', 3600, fn() => BkkProfile::first());
+        $categories = Cache::remember('article_categories_public', 3600, fn() => ArticleCategory::orderBy('name')->get());
+
+        return view('articles.show', compact(
+            'profile',
+            'article',
+            'relatedArticles',
+            'categories',
+            'totalViews',
+            'dailyViews'
+        ));
     }
 
     public function category(string $slug)

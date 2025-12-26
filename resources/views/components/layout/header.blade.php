@@ -4,6 +4,7 @@
 <nav class="bg-blue-950 shadow-md sticky top-0 z-50">
     <div class="container mx-auto px-4">
         <div class="flex justify-between items-center py-3">
+            
             <!-- Logo -->
             <div class="flex items-center space-x-3">
                 @if ($profile->logo)
